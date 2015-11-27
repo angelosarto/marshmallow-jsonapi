@@ -16,6 +16,9 @@ class Author(Model):
 class Post(Model):
     pass
 
+def dasherize(text):
+    return text.replace('_', '-')
+
 ### MOCK DATABASE ###
 
 comment1 = Comment(id=1, body='First!')
@@ -23,8 +26,8 @@ comment2 = Comment(id=2, body='I like XML better!')
 
 author1 = Author(id=1, first_name='Dan', last_name='Gebhardt', twitter='dgeb')
 
-post1 = Post(id=1, title='JSON API paints my bikeshed!',
-        author=author1, comments=[comment1, comment2])
+post1 = Post(id=1, some_title='JSON API paints my bikeshed!',
+        author=author1, some_comments=[comment1, comment2])
 
 db = {
     'comments': [
@@ -68,7 +71,7 @@ class AuthorSchema(Schema):
 
 class PostSchema(Schema):
     id = fields.Str(dump_only=True)
-    title = fields.Str()
+    some_title = fields.Str()
 
     author = Relationship(
         related_view='author_detail',
@@ -77,7 +80,7 @@ class PostSchema(Schema):
         type_='people',
     )
 
-    comments = Relationship(
+    some_comments = Relationship(
         related_view='posts_comments',
         related_view_kwargs={'post_id': '<id>', '_external': True},
         many=True,
@@ -94,6 +97,7 @@ class PostSchema(Schema):
 
     class Meta:
         type_ = 'posts'
+        inflect = dasherize
 
 
 ### VIEWS ###
